@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Registro de Atrasos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            padding-bottom: 80px;
+            min-height: 100vh;
+        }
+        header {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            padding: 20px 16px;
+            padding-top: max(20px, env(safe-area-inset-top));
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        header p {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        .container {
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .card h2 {
+            font-size: 16px;
+            margin-bottom: 14px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #475569;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            background: #f8fafc;
+            transition: border-color 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: white;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+        }
+        .btn-success {
+            background: #16a34a;
+            color: white;
+        }
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 13px;
+            width: auto;
+            border-radius: 8px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .btn-group .btn {
+            flex: 1;
+        }
+        .aluno-item, .atraso-item {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #2563eb;
+        }
+        .aluno-item .nome, .atraso-item .nome {
+            font-weight: 600;
+            font-size: 15px;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+        .aluno-item .info, .atraso-item .info {
+            font-size: 13px;
+            color: #64748b;
+        }
+        .atraso-item {
+            border-left-color: #f59e0b;
+        }
+        .atraso-item .horario {
+            font-size: 12px;
+            color: #f59e0b;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .atraso-item .motivo {
+            font-size: 13px;
+            color: #475569;
+            margin-top: 4px;
+            font-style: italic;
+        }
+        .empty {
+            text-align: center;
+            padding: 30px 16px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab.active {
+            background: #2563eb;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .sms-preview {
+            background: #eff6ff;
+            border: 1px dashed #93c5fd;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 13px;
+            color: #1e40af;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #dbeafe;
+            color: #1e40af;
+            margin-left: 6px;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal h3 {
+            margin-bottom: 12px;
+            font-size: 17px;
+        }
+        .modal .btn-group {
+            margin-top: 16px;
+        }
+        .search-box {
+            position: relative;
+            margin-bottom: 12px;
+        }
+        .search-box input {
+            padding-left: 36px;
+        }
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+        }
+        .footer-info {
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            padding: 16px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1e293b;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        .toast.success { background: #16a34a; }
+        .toast.error { background: #dc2626; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .stat-card .num {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2563eb;
+        }
+        .stat-card .label {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📋 Registro de Atrasos</h1>
+        <p>Controle e notificação de responsáveis</p>
+    </header>
+
+    <div class="container">
+        <div class="stats">
+            <div class="stat-card">
+                <div class="num" id="statAlunos">0</div>
+                <div class="label">Alunos</div>
+            </div>
+            <div class="stat-card">
+                <div class="num" id="statAtrasos">0</div>
+                <div class="label">Atrasos Hoje</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="registrar">Registrar</div>
+            <div class="tab" data-tab="alunos">Alunos</div>
+            <div class="tab" data-tab="historico">Histórico</div>
+        </div>
+
+        <!-- ABA REGISTRAR ATRASO -->
+        <div class="tab-content active" id="tab-registrar">
+            <div class="card">
+                <h2>⏰ Novo Atraso</h2>
+                <div class="form-group">
+                    <label>Aluno</label>
+                    <select id="selectAluno">
+                        <option value="">Selecione o aluno...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Horário de chegada</label>
+                    <input type="time" id="inputHora" step="60">
+                </div>
+                <div class="form-group">
+                    <label>Motivo (opcional)</label>
+                    <textarea id="inputMotivo" placeholder="Ex: Trânsito, consulta médica..."></textarea>
+                </div>
+                <div class="sms-preview" id="smsPreview">
+                    Selecione um aluno para visualizar a mensagem.
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="btnRegistrar" disabled>📝 Registrar</button>
+                    <button class="btn btn-success" id="btnRegistrarEnviar" disabled>📱 Registrar + SMS</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA ALUNOS -->
+        <div class="tab-content" id="tab-alunos">
+            <div class="card">
+                <h2>➕ Cadastrar Aluno</h2>
+                <div class="form-group">
+                    <label>Nome do aluno</label>
+                    <input type="text" id="inputNome" placeholder="Nome completo">
+                </div>
+                <div class="form-group">
+                    <label>Turma</label>
+                    <input type="text" id="inputTurma" placeholder="Ex: 8º Ano A">
+                </div>
+                <div class="form-group">
+                    <label>Nome do responsável</label>
+                    <input type="text" id="inputResponsavel" placeholder="Nome do pai/mãe/responsável">
+                </div>
+                <div class="form-group">
+                    <label>Telefone do responsável</label>
+                    <input type="tel" id="inputTelefone" placeholder="(11) 99999-9999">
+                </div>
+                <button class="btn btn-primary" id="btnCadastrar">✅ Cadastrar Aluno</button>
+            </div>
+
+            <div class="card">
+                <h2>👨‍🎓 Alunos Cadastrados</h2>
+                <div class="search-box">
+                    <input type="text" id="searchAluno" placeholder="Buscar aluno...">
+                </div>
+                <div id="listaAlunos"></div>
+            </div>
+        </div>
+
+        <!-- ABA HISTÓRICO -->
+        <div class="tab-content" id="tab-historico">
+            <div class="card">
+                <h2>📊 Histórico de Atrasos</h2>
+                <div class="form-group">
+                    <label>Filtrar por data</label>
+                    <input type="date" id="filtroData">
+                </div>
+                <div id="listaAtrasos"></div>
+                <button class="btn btn-danger btn-sm" id="btnLimparHistorico" style="margin-top:12px;width:100%;">🗑️ Limpar Histórico</button>
+            </div>
+        </div>
+
+        <div class="footer-info">
+            💡 Dica: No iPhone, use Safari e "Adicionar à Tela de Início" para instalar como app.
+        </div>
+    </div>
+
+    <!-- Modal de SMS -->
+    <div class="modal-overlay" id="modalSMS">
+        <div class="modal">
+            <h3>📱 Enviar SMS</h3>
+            <p style="font-size:13px;color:#64748b;margin-bottom:12px;">
+                Mensagem que será enviada ao responsável:
+            </p>
+            <div class="sms-preview" id="smsTextoModal"></div>
+            <div class="btn-group">
+                <button class="btn btn-warning" id="btnCopiarSMS">📋 Copiar</button>
+                <button class="btn btn-success" id="btnEnviarSMS">📲 Enviar SMS</button>
+            </div>
+            <button class="btn btn-danger btn-sm" id="btnFecharModal" style="margin-top:8px;width:100%;">Cancelar</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============ ESTADO ============
+        let alunos = JSON.parse(localStorage.getItem('alunos_atrasos') || '[]');
+        let atrasos = JSON.parse(localStorage.getItem('atrasos_registros') || '[]');
+        let smsPendente = null;
+
+        // ============ UTILITÁRIOS ============
+        function salvar() {
+            localStorage.setItem('alunos_atrasos', JSON.stringify(alunos));
+            localStorage.setItem('atrasos_registros', JSON.stringify(atrasos));
+        }
+
+        function toast(msg, tipo = '') {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = 'toast show ' + tipo;
+            setTimeout(() => el.className = 'toast', 3000);
+        }
+
+        function formatarData(iso) {
+            const d = new Date(iso);
+            return d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+        }
+
+        function hoje() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        // ============ TABS ============
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // ============ CADASTRO DE ALUNOS ============
+        document.getElementById('btnCadastrar').addEventListener('click', () => {
+            const nome = document.getElementById('inputNome').value.trim();
+            const turma = document.getElementById('inputTurma').value.trim();
+            const responsavel = document.getElementById('inputResponsavel').value.trim();
+            const telefone = document.getElementById('inputTelefone').value.trim();
+
+            if (!nome || !responsavel || !telefone) {
+                toast('Preencha nome, responsável e telefone', 'error');
+                return;
+            }
+
+            alunos.push({
+                id: Date.now().toString(),
+                nome, turma, responsavel, telefone
+            });
+            salvar();
+            atualizarTudo();
+
+            document.getElementById('inputNome').value = '';
+            document.getElementById('inputTurma').value = '';
+            document.getElementById('inputResponsavel').value = '';
+            document.getElementById('inputTelefone').value = '';
+
+            toast('Aluno cadastrado!', 'success');
+        });
+
+        // ============ LISTAS ============
+        function atualizarSelectAlunos() {
+            const select = document.getElementById('selectAluno');
+            select.innerHTML = '<option value="">Selecione o aluno...</option>';
+            alunos.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(a => {
+                const opt = document.createElement('option');
+                opt.value = a.id;
+                opt.textContent = `${a.nome}${a.turma ? ' - ' + a.turma : ''}`;
+                select.appendChild(opt);
+            });
+        }
+
+        function atualizarListaAlunos(filtro = '') {
+            const lista = document.getElementById('listaAlunos');
+            const filtrados = alunos.filter(a => 
+                a.nome.toLowerCase().includes(filtro.toLowerCase()) ||
+                a.responsavel.toLowerCase().includes(filtro.toLowerCase())
+            );
+
+            if (filtrados.length === 0) {
+                lista.innerHTML = '<div class="empty"><div class="empty-icon">👨‍🎓</div>Nenhum aluno cadastrado</div>';
+                return;
+            }
+
+            lista.innerHTML = filtrados.map(a => `
+                <div class="aluno-item">
+                    <div class="nome">${a.nome}</div>
+                    <div class="info">${a.turma || 'Sem turma'} • ${a.responsavel}</div>
+                    <div class="info">📱 ${a.telefone}</div>
+                    <div class="btn-group">
+                        <button class="btn btn-warning btn-sm" onclick="atrasoRapido('${a.id}')">⏰ Atraso</button>
+                        <button class="btn btn-danger btn-sm" onclick="removerAluno('${a.id}')">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function atualizarListaAtrasos() {
+            const dataFiltro = document.getElementById('filtroData').value;
+            let filtrados = [...atrasos].reverse();
+            
+            if (dataFiltro) {
+                filtrados = filtrados.filter(a => a.data.startsWith(dataFiltro));
+            }
+
+            const lista = document.getElementById('listaAtrasos');
+            if (filtrados.length === 0) {
+                lista.innerHTML = '<div class="empty"><div class="empty-icon">📊</div>Nenhum atraso registrado</div>';
+                return;
+            }
+
+            lista.innerHTML = filtrados.map(a => `
+                <div class="atraso-item">
+                    <div class="horario">📅 ${formatarData(a.data)}</div>
+                    <div class="nome">${a.alunoNome}${a.turma ? ' - ' + a.turma : ''}</div>
+                    <div class="info">Chegou às ${a.horario} • Responsável: ${a.responsavel}</div>
+                    ${a.motivo ? `<div class="motivo">Motivo: ${a.motivo}</div>` : ''}
+                    <div class="btn-group">
+                        <button class="btn btn-success btn-sm" onclick="reenviarSMS('${a.id}')">📱 SMS</button>
+                        <button class="btn btn-danger btn-sm" onclick="removerAtraso('${a.id}')">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function atualizarStats() {
+            document.getElementById('statAlunos').textContent = alunos.length;
+            const hojeCount = atrasos.filter(a => a.data.startsWith(hoje())).length;
+            document.getElementById('statAtrasos').textContent = hojeCount;
+        }
+
+        function atualizarTudo() {
+            atualizarSelectAlunos();
+            atualizarListaAlunos(document.getElementById('searchAluno').value);
+            atualizarListaAtrasos();
+            atualizarStats();
+        }
+
+        // ============ REGISTRO DE ATRASO ============
+        function gerarMensagemSMS(aluno, horario) {
+            return `Olá ${aluno.responsavel}, informamos que o(a) aluno(a) ${aluno.nome} chegou atrasado(a) hoje às ${horario}. Por favor, entre em contato com a escola. Obrigado.`;
+        }
+
+        function atualizarPreviewSMS() {
+            const alunoId = document.getElementById('selectAluno').value;
+            const hora = document.getElementById('inputHora').value;
+            const preview = document.getElementById('smsPreview');
+            const btn1 = document.getElementById('btnRegistrar');
+            const btn2 = document.getElementById('btnRegistrarEnviar');
+
+            if (!alunoId) {
+                preview.textContent = 'Selecione um aluno para visualizar a mensagem.';
+                btn1.disabled = true;
+                btn2.disabled = true;
+                return;
+            }
+
+            const aluno = alunos.find(a => a.id === alunoId);
+            if (!aluno) return;
+
+            const horario = hora || new Date().toTimeString().slice(0,5);
+            preview.textContent = '📱 Para ' + aluno.telefone + ': "' + gerarMensagemSMS(aluno, horario) + '"';
+            btn1.disabled = false;
+            btn2.disabled = false;
+        }
+
+        document.getElementById('selectAluno').addEventListener('change', atualizarPreviewSMS);
+        document.getElementById('inputHora').addEventListener('change', atualizarPreviewSMS);
+
+        // Definir hora atual
+        document.getElementById('inputHora').value = new Date().toTimeString().slice(0,5);
+
+        function registrarAtraso(enviarSMS) {
+            const alunoId = document.getElementById('selectAluno').value;
+            const horario = document.getElementById('inputHora').value || new Date().toTimeString().slice(0,5);
+            const motivo = document.getElementById('inputMotivo').value.trim();
+
+            if (!alunoId) {
+                toast('Selecione um aluno', 'error');
+                return;
+            }
+
+            const aluno = alunos.find(a => a.id === alunoId);
+            if (!aluno) return;
+
+            const novoAtraso = {
+                id: Date.now().toString(),
+                alunoId,
+                alunoNome: aluno.nome,
+                turma: aluno.turma,
+                responsavel: aluno.responsavel,
+                telefone: aluno.telefone,
+                horario,
+                motivo,
+                data: new Date().toISOString(),
+                smsEnviado: enviarSMS
+            };
+
+            atrasos.push(novoAtraso);
+            salvar();
+            atualizarTudo();
+
+            document.getElementById('inputMotivo').value = '';
+
+            if (enviarSMS) {
+                const msg = gerarMensagemSMS(aluno, horario);
+                abrirModalSMS(aluno.telefone, msg);
+            } else {
+                toast('Atraso registrado!', 'success');
+            }
+        }
+
+        document.getElementById('btnRegistrar').addEventListener('click', () => registrarAtraso(false));
+        document.getElementById('btnRegistrarEnviar').addEventListener('click', () => registrarAtraso(true));
+
+        function atrasoRapido(alunoId) {
+            document.getElementById('selectAluno').value = alunoId;
+            atualizarPreviewSMS();
+            document.querySelector('.tab[data-tab="registrar"]').click();
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        // ============ MODAL SMS ============
+        function abrirModalSMS(telefone, mensagem) {
+            smsPendente = { telefone, mensagem };
+            document.getElementById('smsTextoModal').textContent = mensagem;
+            document.getElementById('modalSMS').classList.add('active');
+        }
+
+        document.getElementById('btnFecharModal').addEventListener('click', () => {
+            document.getElementById('modalSMS').classList.remove('active');
+            smsPendente = null;
+        });
+
+        document.getElementById('btnCopiarSMS').addEventListener('click', async () => {
+            if (!smsPendente) return;
+            try {
+                await navigator.clipboard.writeText(smsPendente.mensagem);
+                toast('Mensagem copiada!', 'success');
+            } catch (e) {
+                // Fallback para iOS antigo
+                const ta = document.createElement('textarea');
+                ta.value = smsPendente.mensagem;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                toast('Mensagem copiada!', 'success');
+            }
+        });
+
+        document.getElementById('btnEnviarSMS').addEventListener('click', () => {
+            if (!smsPendente) return;
+            const tel = smsPendente.telefone.replace(/\D/g, '');
+            const msg = encodeURIComponent(smsPendente.mensagem);
+            
+            // Link sms: funciona em Android e iOS
+            // iOS usa &body=, Android usa ?body=
+           // Código antigo (remova ou comente):
+// const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+// const url = isIOS ? `sms:${tel}&body=${msg}` : `sms:${tel}?body=${msg}`;
+
+// Código novo (substitua por este):
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+const url = isIOS ?
+  `sms:${tel};body=${msg}` :
+  `sms:${tel}?body=${msg}`;
+            window.location.href = url;
+            document.getElementById('modalSMS').classList.remove('active');
+            
+            // Marcar como enviado
+            setTimeout(() => {
+                const ultimo = atrasos[atrasos.length - 1];
+                if (ultimo) {
+                    ultimo.smsEnviado = true;
+                    salvar();
+                }
+                toast('SMS aberto no app de mensagens', 'success');
+            }, 500);
+        });
+
+        // ============ AÇÕES ============
+        function removerAluno(id) {
+            if (!confirm('Remover este aluno?')) return;
+            alunos = alunos.filter(a => a.id !== id);
+            salvar();
+            atualizarTudo();
+            toast('Aluno removido', 'success');
+        }
+
+        function removerAtraso(id) {
+            if (!confirm('Remover este registro?')) return;
+            atrasos = atrasos.filter(a => a.id !== id);
+            salvar();
+            atualizarTudo();
+            toast('Registro removido', 'success');
+        }
+
+        function reenviarSMS(id) {
+            const atraso = atrasos.find(a => a.id === id);
+            if (!atraso) return;
+            const aluno = alunos.find(a => a.id === atraso.alunoId);
+            if (!aluno) {
+                toast('Aluno não encontrado', 'error');
+                return;
+            }
+            const msg = gerarMensagemSMS(aluno, atraso.horario);
+            abrirModalSMS(aluno.telefone, msg);
+        }
+
+        document.getElementById('btnLimparHistorico').addEventListener('click', () => {
+            if (!confirm('Tem certeza que deseja apagar TODO o histórico de atrasos? Esta ação não pode ser desfeita.')) return;
+            atrasos = [];
+            salvar();
+            atualizarTudo();
+            toast('Histórico limpo', 'success');
+        });
+
+        // ============ BUSCA ============
+        document.getElementById('searchAluno').addEventListener('input', (e) => {
+            atualizarListaAlunos(e.target.value);
+        });
+
+        document.getElementById('filtroData').addEventListener('change', atualizarListaAtrasos);
+
+        // ============ INICIALIZAÇÃO ============
+        atualizarTudo();
+
+        // Expor funções globalmente para onclick
+        window.atrasoRapido = atrasoRapido;
+        window.removerAluno = removerAluno;
+        window.removerAtraso = removerAtraso;
+        window.reenviarSMS = reenviarSMS;
+    </script>
+</body>
+</html>
